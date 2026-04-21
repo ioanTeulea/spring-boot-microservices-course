@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -22,6 +23,7 @@ public class Customer extends BaseEntity {
 
     @NotBlank
     @Column(name="name")
+    @Size(min=3,max = 30, message = "The length of the name must be between 3 and 30 characters")
     private String name;
 
     @Email

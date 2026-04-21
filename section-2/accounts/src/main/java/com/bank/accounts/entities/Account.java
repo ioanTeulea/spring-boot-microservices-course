@@ -1,6 +1,7 @@
 package com.bank.accounts.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -22,9 +23,11 @@ public class Account extends BaseEntity{
     private Long customerId;
 
     @Column(name="account_type")
+    @NotBlank
     private String accountType;
 
     @Column(name="branch_address")
+    @NotBlank
     private String branchAdress;
 
 }
