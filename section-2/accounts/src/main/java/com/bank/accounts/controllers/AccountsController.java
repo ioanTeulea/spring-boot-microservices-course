@@ -30,6 +30,7 @@ public class AccountsController {
     @Operation(summary = "Create a new bank account", description = "Endpoint to create a new bank account with customer details")
     @ApiResponses({
             @ApiResponse( responseCode = "201", description = "HTTP Status Created"),
+            @ApiResponse(responseCode = "400", description = "Customer already exists", content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))),
             @ApiResponse(responseCode = "500", description = "HTTP Status Internal Server Error",content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @PostMapping(path="/create")
