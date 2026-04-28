@@ -16,6 +16,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.xml.xpath.XPath;
@@ -25,6 +26,7 @@ import javax.xml.xpath.XPath;
 )
 @RestController
 @RequestMapping(path="/api")
+@Validated
 @AllArgsConstructor
 public class CardsController {
     private final ICardService cardService;
@@ -37,7 +39,7 @@ public class CardsController {
             @ApiResponse(responseCode = "500", description = "HTTP Status Internal Server Error", content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @PostMapping(path = "/create")
-    public ResponseEntity<ResponseDTO> createCard(@Valid @RequestParam @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits")
+    public ResponseEntity<ResponseDTO> createCard(@RequestParam @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits")
                                                   String mobileNumber) {
         cardService.createCard(mobileNumber);
 
@@ -50,10 +52,7 @@ public class CardsController {
     }
 
 
-    @Operation(
-            summary = "Fetch Card Details REST API",
-            description = "REST API to fetch card details based on a mobile number"
-    )
+    @Operation(summary = "Fetch Card Details REST API", description = "REST API to fetch card details based on a mobile number")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "HTTP Status OK"),
             @ApiResponse(responseCode = "400", description = "Invalid mobile number format", content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))),
@@ -61,9 +60,8 @@ public class CardsController {
             @ApiResponse(responseCode = "500", description = "HTTP Status Internal Server Error", content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     })
     @GetMapping(path = "/fetch")
-    public ResponseEntity<CardDTO> fetchCardDetails(
-            @RequestParam
-            @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Invalid mobile number format") String mobileNumber) {
+    public ResponseEntity<CardDTO> fetchCardDetails(@RequestParam @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Invalid mobile number format")
+                                                        String mobileNumber) {
         CardDTO card = cardService.getCard(mobileNumber);
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -90,10 +88,7 @@ public class CardsController {
                         CardsConstants.MESSAGE_200
                 ));
     }
-    @Operation(
-            summary = "Delete Card Details REST API",
-            description = "REST API to delete Card details based on a mobile number"
-    )
+    @Operation(summary = "Delete Card Details REST API", description = "REST API to delete Card details based on a mobile number")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "HTTP Status OK"),
             @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class))),
