@@ -1,0 +1,106 @@
+services:
+
+  configserver:
+    image: ioanteulea/configserver:s9
+    container_name: configserver-ms
+    ports:
+      - "8071:8071"
+    extends:
+      service: microservice-base-config
+      file: common-config.yml
+    environment:
+      SPRING_APPLICATION_NAME: "configserver"
+
+  eurekaserver:
+    image: ioanteulea/eurekaserver:s9
+    container_name: eurekaserver-ms
+    ports:
+      - "8070:8070"
+    depends_on:
+      configserver:
+        condition: service_started
+    extends:
+      service: microservice-configserver-config
+      file: common-config.yml
+    environment:
+      SPRING_APPLICATION_NAME: "eurekaserver"
+
+  gatewayserver:
+    image: ioanteulea/gatewayserver:s9
+    container_name: gatewayserver-ms
+    ports:
+      - "8072:8072"
+    depends_on:
+      configserver:
+        condition: service_started
+      eurekaserver:
+        condition: service_started
+      accounts:
+        condition: service_started
+      cards:
+        condition: service_started
+      loans:
+        condition: service_started
+    extends:
+      service: microservice-configserver-config
+      file: common-config.yml
+    environment:
+      SPRING_APPLICATION_NAME: "gatewayserver"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://eurekaserver:8070/eureka/"
+
+  accounts:
+    image: ioanteulea/accounts:s9
+    container_name: accounts-ms
+    ports:
+      - "8080:8080"
+    depends_on:
+      configserver:
+        condition: service_started
+      eurekaserver:
+        condition: service_started
+    environment:
+      SPRING_APPLICATION_NAME: "accounts"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://eurekaserver:8070/eureka/"
+    extends:
+      service: microservice-configserver-config
+      file: common-config.yml
+
+
+  loans:
+    image: ioanteulea/loans:s9
+    container_name: loans-ms
+    ports:
+      - "8090:8090"
+    depends_on:
+      configserver:
+        condition: service_started
+      eurekaserver:
+        condition: service_started
+    environment:
+      SPRING_APPLICATION_NAME: "loans"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://eurekaserver:8070/eureka/"
+    extends:
+      service: microservice-configserver-config
+      file: common-config.yml
+
+  cards:
+    image: ioanteulea/cards:s9
+    container_name: cards-ms
+    ports:
+      - "9000:9000"
+    depends_on:
+      configserver:
+        condition: service_started
+      eurekaserver:
+        condition: service_started
+    environment:
+      SPRING_APPLICATION_NAME: "cards"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://eurekaserver:8070/eureka/"
+
+    extends:
+      service: microservice-configserver-config
+      file: common-config.yml
+
+networks:
+  bank-network:
+    driver: bridge
